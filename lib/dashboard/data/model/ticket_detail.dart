@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 List<TicketDetail> ticketDetailFromJson(String str) => List<TicketDetail>.from(json.decode(str).map((x) => TicketDetail.fromJson(x)));
+TicketDetail ticketDetailSingleFromJson(String str) => TicketDetail.fromJson(json.decode(str));
 
 String ticketDetailToJson(List<TicketDetail> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
@@ -54,22 +55,24 @@ class TicketDetail {
 
 class OfflineTicket {
     OfflineTicket({
-        required this.id,
-        required this.number,
-        required this.organization,
-        required this.userEmail,
-        required this.organizationName,
-        required this.lineitems,
-        required this.price,
-        required this.issuedTs,
-        required this.onlineBooking,
-        required this.isScanned,
-        required this.createdTs,
-        required this.modifiedTs,
+       required this.id,
+       required this.number,
+       required this.fine,
+       required this.organization,
+       required this.userEmail,
+       required this.organizationName,
+       required this.lineitems,
+       required this.price,
+       required this.issuedTs,
+       required this.onlineBooking,
+       required this.isScanned,
+       required this.createdTs,
+       required this.modifiedTs,
     });
 
     int id;
     String number;
+    double fine;
     int organization;
     String userEmail;
     String organizationName;
@@ -84,6 +87,7 @@ class OfflineTicket {
     factory OfflineTicket.fromJson(Map<String, dynamic> json) => OfflineTicket(
         id: json["id"],
         number: json["number"],
+        fine: json["fine"]??0,
         organization: json["organization"],
         userEmail: json["user_email"],
         organizationName: json["organization_name"],
@@ -99,6 +103,7 @@ class OfflineTicket {
     Map<String, dynamic> toJson() => {
         "id": id,
         "number": number,
+        "fine": fine,
         "organization": organization,
         "user_email": userEmail,
         "organization_name": organizationName,
@@ -114,15 +119,15 @@ class OfflineTicket {
 
 class Lineitem {
     Lineitem({
-      required  this.id,
-      required  this.subcategoryName,
-      required  this.type,
-      required  this.subcategoryPrice,
-      required  this.category,
-      required  this.quantity,
-      required  this.price,
-      required  this.createdTs,
-      required  this.modifiedTs,
+        required this.id,
+        required this.subcategoryName,
+        required this.type,
+        required this.subcategoryPrice,
+        required this.category,
+        required this.quantity,
+        required this.price,
+        required this.createdTs,
+        required this.modifiedTs,
     });
 
     int id;

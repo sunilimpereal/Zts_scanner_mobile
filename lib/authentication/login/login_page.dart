@@ -5,6 +5,7 @@ import 'package:zts_scanner_mobile/authentication/login/bloc/login_bloc.dart';
 import 'package:zts_scanner_mobile/authentication/login/data/repository/login_repository.dart';
 import 'package:zts_scanner_mobile/authentication/login/widgets/button.dart';
 import 'package:zts_scanner_mobile/authentication/login/widgets/text_field.dart';
+import 'package:zts_scanner_mobile/dashboard/screen/dashboard_home.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -120,8 +121,12 @@ class _LoginPageState extends State<LoginPage> {
                       .then((value) {
                     Future.delayed(const Duration(milliseconds: 100)).then((value1) {
                       if (value) {
-                        Navigator.of(context)
-                            .pushNamedAndRemoveUntil('/dashboard', (Route<dynamic> route) => false);
+                       Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const DashboardScanScreen(),
+                            ),
+                          );
                       }
                       setState(() {
                         loginFailFlag = !value;

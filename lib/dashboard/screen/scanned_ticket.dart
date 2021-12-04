@@ -22,11 +22,7 @@ class _PostTicketScanScreenState extends State<PostTicketScanScreen> {
   late bool loading = false;
   @override
   void initState() {
-    // WidgetsBinding.instance?.addPostFrameCallback((_) {
-    //   Future.delayed(const Duration(seconds: 15)).then((value) {
-    //     Navigator.pop(context);
-    //   });
-    // });
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
     super.initState();
   }
@@ -40,28 +36,24 @@ class _PostTicketScanScreenState extends State<PostTicketScanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     return Scaffold(
         backgroundColor: Colors.white,
         body: RawKeyboardListener(
           focusNode: FocusNode(),
           autofocus: true,
           onKey: (event) async {
-            // log("key: ${event.character.toString()}");
-
             if (event.isKeyPressed(LogicalKeyboardKey.enter)) {
-              qrCodeScan(
-                  context: context,
-                  qrCode: qrCode.trim().replaceAll(RegExp(r'(\n){3,}'), "\n\n"),
-                  clear: clear);
+              qrCodeScan(context: context, qrCode1: cleanQr(qrCode.trim()), clear: clear);
+            } else if (event.isKeyPressed(LogicalKeyboardKey.tab)) {
+              qrCodeScan(context: context, qrCode1: cleanQr(qrCode.trim()), clear: clear);
             } else {
               if (event.character != null) {
-                qrCode = qrCode + event.character!;
-              }
-              if (event.isKeyPressed(LogicalKeyboardKey.backspace)) {
-                qrCode = qrCode.substring(0, qrCode.length - 1);
+                setState(() {
+                  qrCode = qrCode + event.character!;
+                });
               }
             }
-            handleKey(event.data);
           },
           child: Center(
             child: Column(
@@ -80,13 +72,13 @@ class _PostTicketScanScreenState extends State<PostTicketScanScreen> {
                 Text(qrCode),
                 loading
                     ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
                           height: 35,
                           width: 35,
                           child: CircularProgressIndicator(),
                         ),
-                    )
+                      )
                     : Container(),
                 Text(
                   !widget.ticketDetail.isScanned ? "Ticket Scanned" : "Ticket already Scanned",
@@ -103,7 +95,17 @@ class _PostTicketScanScreenState extends State<PostTicketScanScreen> {
                 ),
                 Text(widget.ticketDetail.offlineTicket.number),
                 const SizedBox(
-                  height: 32,
+                  height: 16,
+                ),
+                widget.ticketDetail.offlineTicket.fine > 0
+                    ? Text("Fine : ₹ ${widget.ticketDetail.offlineTicket.fine}",style: TextStyle(
+                      color:Colors.red,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18
+                    ),)
+                    : Container(),
+                const SizedBox(
+                  height: 16,
                 ),
                 widget.ticketDetail.isScanned ? Text("Last Scanned") : Container(),
                 const SizedBox(
@@ -163,11 +165,11 @@ class _PostTicketScanScreenState extends State<PostTicketScanScreen> {
   }
 
   void qrCodeScan(
-      {required BuildContext context, required String qrCode, required Function clear}) async {
+      {required BuildContext context, required String qrCode1, required Function clear}) async {
     setState(() {
       loading = true;
     });
-    ScannerRepository.scanTicket(context: context, ticketNumber: qrCode).then((value) {
+    ScannerRepository.scanTicket(context: context, ticketNumber: qrCode1).then((value) {
       if (value != null) {
         Navigator.pushReplacement(
           context,
@@ -179,7 +181,6 @@ class _PostTicketScanScreenState extends State<PostTicketScanScreen> {
         ).then((value) {
           SystemChannels.textInput.invokeMethod('TextInput.hide');
           clear();
-          
         });
       } else {
         setState(() {

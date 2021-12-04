@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:lottie/lottie.dart';
 import 'package:zts_scanner_mobile/dashboard/data/repository/scanner_repository.dart';
 import 'package:zts_scanner_mobile/dashboard/screen/scanned_ticket.dart';
 import 'package:zts_scanner_mobile/dashboard/screen/scannertester.dart';
 import 'package:zts_scanner_mobile/main.dart';
+import 'package:zts_scanner_mobile/utils/methods.dart';
 
 class DashboardScanScreen extends StatefulWidget {
   const DashboardScanScreen({Key? key}) : super(key: key);
@@ -19,9 +21,13 @@ class _DashboardScanScreenState extends State<DashboardScanScreen> {
   late String qrCode = "";
 
   List<String> scannedTickets = [];
+  List<String> items = ["Ticket", "Pass"];
+  String selectedItem = "";
+
   @override
   void initState() {
-    // SystemChrome.setEnabledSystemUIOverlays([]);
+    selectedItem = items[0];
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
     sharedPref.ticektCount(0);
     super.initState();
@@ -37,6 +43,8 @@ class _DashboardScanScreenState extends State<DashboardScanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: RawKeyboardListener(
@@ -45,16 +53,11 @@ class _DashboardScanScreenState extends State<DashboardScanScreen> {
         onKey: (event) async {
           if (event.isKeyPressed(LogicalKeyboardKey.enter)) {
             scannedTickets.add(qrCode);
-            Future.delayed(Duration(milliseconds: 800)).then((value) {
-              qrCodeScan(
-                  context: context, qrCode1: qrCode.trim().replaceAll("\n", ""), clear: clear);
-            });
+
+            qrCodeScan(context: context, qrCode1: cleanQr(qrCode.trim()), clear: clear);
           } else if (event.isKeyPressed(LogicalKeyboardKey.tab)) {
             scannedTickets.add(qrCode);
-            Future.delayed(Duration(milliseconds: 800)).then((value) {
-              qrCodeScan(
-                  context: context, qrCode1: qrCode.trim().replaceAll("\n", ""), clear: clear);
-            });
+            qrCodeScan(context: context, qrCode1: cleanQr(qrCode.trim()), clear: clear);
           } else {
             if (event.character != null) {
               setState(() {
@@ -69,31 +72,58 @@ class _DashboardScanScreenState extends State<DashboardScanScreen> {
             children: [
               const SizedBox(height: 2),
               const SizedBox(height: 50),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    tooltip: "test",
-                    icon: Icon(Icons.bar_chart),
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ScannerTest(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal:16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    DropdownButton(
+                      value: selectedItem,
+                      icon: Icon(Icons.keyboard_arrow_down),
+                      items: items.map((String items) {
+                        return DropdownMenuItem(value: items, child: Text(items));
+                      }).toList(),
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: appFonts.ubuntu
+                      ),
+                      underline: Container(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedItem = newValue ?? items[0];
+                        });
+                      },
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          tooltip: "Logout",
+                          icon: Icon(Icons.camera),
+                          onPressed: () {
+                            FlutterBarcodeScanner.scanBarcode('#ff6666', 'Cancel', true, ScanMode.QR)
+                                .then((value) {
+                              qrCodeScan(
+                                  context: context, qrCode1: cleanQr(value.trim()), clear: clear);
+                            });
+                          },
                         ),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    tooltip: "Logout",
-                    icon: Icon(Icons.logout),
-                    onPressed: () {
-                      sharedPref.setLoggedOut();
-                      Navigator.of(context)
-                          .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
-                    },
-                  )
-                ],
+                        IconButton(
+                          tooltip: "Logout",
+                          icon: Icon(Icons.logout),
+                          onPressed: () {
+                            sharedPref.setLoggedOut();
+
+                            Navigator.of(context)
+                                .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
+                          },
+                        )
+                      ],
+                    )
+                  ],
+                ),
               ),
               Center(
                 child: Center(
@@ -189,11 +219,6 @@ class _DashboardScanScreenState extends State<DashboardScanScreen> {
                                   ),
                                 ),
                                 SizedBox(height: 10),
-                                Container(
-                                    height: 90,
-                                    child: Column(
-                                        children:
-                                            scannedTickets.map((e) => Text("qr $e")).toList()))
                               ],
                             ),
                           ),
@@ -216,16 +241,6 @@ class _DashboardScanScreenState extends State<DashboardScanScreen> {
       loading = true;
     });
     ScannerRepository.scanTicket(context: context, ticketNumber: qrCode1).then((value) {
-      showToast('$qrCode1',
-          context: context,
-          animation: StyledToastAnimation.scale,
-          reverseAnimation: StyledToastAnimation.fade,
-          position: StyledToastPosition.top,
-          animDuration: Duration(seconds: 1),
-          duration: Duration(seconds: 30),
-          curve: Curves.elasticOut,
-          reverseCurve: Curves.linear,
-          backgroundColor: Colors.green);
       if (value != null) {
         //TODO : Dialog box
         Navigator.pushReplacement(

@@ -29,15 +29,17 @@ class ScannerRepository {
         TicketDetail ticketDetail = ticketDetailFromJson(response.body)[0];
         if (!ticketDetail.isScanned) {
           log('is_scanned ${ticketDetail.isScanned}');
-          final response = await API.patch(
+          final responsePatch = await API.patch(
               url: 'qr_code/${ticketDetail.id}/',
               context: context,
               apiRoot: config.API_ROOTV1,
               body: '{"is_scanned": true }');
-          if (response.statusCode == 200) {
+          if (responsePatch.statusCode == 200) {
+             TicketDetail ticketDetailPatch = ticketDetailSingleFromJson(response.body);
+
             sharedPref.ticektCount((int.parse(sharedPref.ticketCount) + 1));
 
-            return ticketDetail;
+            return ticketDetailPatch;
           }
         } else {
           return ticketDetail;
@@ -73,7 +75,7 @@ class ScannerRepository {
           apiRoot: config.API_ROOTV1,
           headers: postheaders,
           context: context,
-          body: "{'qr_code': ''}");
+          body: "{'qr_code': '$qrCode'}");
       if (response.statusCode == 200) {
         return true;
       } else {
