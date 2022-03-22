@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:zts_scanner_mobile/authentication/login/login_page.dart';
 import 'package:zts_scanner_mobile/constants/app_fonts.dart';
 import 'package:zts_scanner_mobile/constants/appstyles.dart';
@@ -13,7 +14,9 @@ import 'authentication/login/bloc/login_stream.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await sharedPref.init();
-  runApp(const AppWrapperProvider());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
+    runApp(const AppWrapperProvider());
+  });
 }
 
 AppStyles appStyles = AppStyles();

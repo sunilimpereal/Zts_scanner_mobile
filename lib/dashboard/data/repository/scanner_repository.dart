@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:zts_scanner_mobile/constants/config_.dart';
 import 'package:zts_scanner_mobile/dashboard/data/model/ticket_detail.dart';
 import 'package:zts_scanner_mobile/repository/repositry.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
@@ -22,7 +23,7 @@ class ScannerRepository {
 
       final response = await API.get(
           url: 'qr_code/?uuid=$ticketNumber',
-          apiRoot: config.API_ROOTV1,
+          apiRoot: Config().API_ROOTV1,
           context: context,
           headers1: headers);
       if (response.statusCode == 200) {
@@ -32,14 +33,18 @@ class ScannerRepository {
           final responsePatch = await API.patch(
               url: 'qr_code/${ticketDetail.id}/',
               context: context,
-              apiRoot: config.API_ROOTV1,
+              apiRoot: Config().API_ROOTV1,
               body: '{"is_scanned": true }');
           if (responsePatch.statusCode == 200) {
-             TicketDetail ticketDetailPatch = ticketDetailSingleFromJson(response.body);
-
+            TicketDetail ticketDetailPatch = ticketDetailSingleFromJson(responsePatch.body);
+            ticketDetailPatch.isScanned = false;
+            log("post ticket responce : ${responsePatch.body}");
             sharedPref.ticektCount((int.parse(sharedPref.ticketCount) + 1));
 
             return ticketDetailPatch;
+          } else {
+            ticketDetail.isScanned = true;
+            return ticketDetail;
           }
         } else {
           return ticketDetail;
@@ -72,7 +77,7 @@ class ScannerRepository {
       };
       final response = await API.post(
           url: 'validate_adoption_pass/',
-          apiRoot: config.API_ROOTV1,
+          apiRoot: Config().API_ROOTV1,
           headers: postheaders,
           context: context,
           body: "{'qr_code': '$qrCode'}");

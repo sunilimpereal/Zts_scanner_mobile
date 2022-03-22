@@ -6,6 +6,7 @@ import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:zts_scanner_mobile/authentication/login/bloc/login_stream.dart';
+import 'package:zts_scanner_mobile/constants/config_.dart';
 import '../main.dart';
 
 class API {
@@ -26,8 +27,8 @@ class API {
       String? apiRoot,
       Map<String, String>? headers1}) async {
     try {
-      log('url: ${apiRoot ?? config.API_ROOT}${url} ');
-      var response = await http.get(Uri.parse("${apiRoot ?? config.API_ROOT}$url"),
+      log('url: ${apiRoot ?? Config().API_ROOT}${url} ');
+      var response = await http.get(Uri.parse("${apiRoot ?? Config().API_ROOT}$url"),
           headers: headers1 ?? headers);
       log('respose: ${response.statusCode}');
       log('respose: ${response.body}');
@@ -50,9 +51,9 @@ class API {
     String? apiRoot,
   }) async {
     try {
-      log('url: ${apiRoot ?? config.API_ROOT}${url} ');
+      log('url: ${apiRoot ?? Config().API_ROOT}${url} ');
       log('body: $body');
-      var response = await http.post(Uri.parse("${apiRoot ?? config.API_ROOT}$url"),
+      var response = await http.post(Uri.parse("${apiRoot ?? Config().API_ROOT}$url"),
           body: body, headers: headers ?? postheaders);
       log('respose: ${response.statusCode}');
       log('respose: ${response.body}');
@@ -72,9 +73,9 @@ class API {
     String? apiRoot,
   }) async {
     try {
-      log('url: ${apiRoot ?? config.API_ROOT}${url} ');
+      log('url: ${apiRoot ?? Config().API_ROOT}${url} ');
       log('body: $body');
-      var response = await http.patch(Uri.parse("${apiRoot ?? config.API_ROOT}$url"),
+      var response = await http.patch(Uri.parse("${apiRoot ?? Config().API_ROOT}$url"),
           body: body, headers: headers ?? postheaders);
       log('respose: ${response.statusCode}');
       log('respose: ${response.body}');

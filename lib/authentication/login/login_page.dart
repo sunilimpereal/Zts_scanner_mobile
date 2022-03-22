@@ -6,6 +6,7 @@ import 'package:zts_scanner_mobile/authentication/login/data/repository/login_re
 import 'package:zts_scanner_mobile/authentication/login/widgets/button.dart';
 import 'package:zts_scanner_mobile/authentication/login/widgets/text_field.dart';
 import 'package:zts_scanner_mobile/dashboard/screen/dashboard_home.dart';
+import 'package:zts_scanner_mobile/settings/screen/settings_screen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -20,27 +21,82 @@ class _LoginPageState extends State<LoginPage> {
   FocusNode mobileFocus = FocusNode();
   FocusNode passwordFocus = FocusNode();
   bool loginFailFlag = false;
+  bool _keyboardVisible = false;
   ontap() {
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    _keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
     LoginBloc? loginBloc = LoginProvider.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-              'assets/images/background-login.jpg',
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                  'assets/images/background-login.jpg',
+                ),
+                fit: BoxFit.cover,
+              ),
             ),
-            fit: BoxFit.cover,
+            child: Center(
+              child: logincard(loginBloc),
+            ),
           ),
-        ),
-        child: Center(
-          child: logincard(loginBloc),
-        ),
+          !_keyboardVisible
+              ? Container(
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Material(
+                              color: Colors.white.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              clipBehavior: Clip.hardEdge,
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (context) => SettingsScreen()));
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: const [
+                                      Icon(
+                                        Icons.settings,
+                                        size: 24,
+                                      ),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
+                                      Text(
+                                        'Settings',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              : Container(),
+        ],
       ),
     );
   }
@@ -121,12 +177,12 @@ class _LoginPageState extends State<LoginPage> {
                       .then((value) {
                     Future.delayed(const Duration(milliseconds: 100)).then((value1) {
                       if (value) {
-                       Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const DashboardScanScreen(),
-                            ),
-                          );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DashboardScanScreen(),
+                          ),
+                        );
                       }
                       setState(() {
                         loginFailFlag = !value;

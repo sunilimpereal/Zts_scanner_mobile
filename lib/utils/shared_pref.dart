@@ -16,6 +16,7 @@ class SharedPref {
   String get userEmail => _sharedPref!.getString('userEmail') ?? "";
   String get organizationName => _sharedPref!.getString('organizationName') ?? "";
   String get organizationLogo => _sharedPref!.getString('organizationLogo') ?? "";
+  String get getbaseUrl => _sharedPref!.getString('baseUrl') ?? "http://zts.afroaves.com:8080/";
   String get ticketCount => _sharedPref!.getString('ticketCount') ?? "0";
 
   String? get token => _sharedPref!.getString('authToken');
@@ -47,6 +48,10 @@ class SharedPref {
   setAuthToken({required String token}) {
     log("see tocken $token");
     _sharedPref!.setString('authToken', token);
+  }
+
+  setbaseUrl({required String baseUrl}) {
+    _sharedPref!.setString('baseUrl', baseUrl);
   }
 }
 

@@ -73,7 +73,7 @@ class _DashboardScanScreenState extends State<DashboardScanScreen> {
               const SizedBox(height: 2),
               const SizedBox(height: 50),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal:16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -84,11 +84,10 @@ class _DashboardScanScreenState extends State<DashboardScanScreen> {
                         return DropdownMenuItem(value: items, child: Text(items));
                       }).toList(),
                       style: TextStyle(
-                        color: Colors.green,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: appFonts.ubuntu
-                      ),
+                          color: Colors.green,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: appFonts.ubuntu),
                       underline: Container(),
                       onChanged: (String? newValue) {
                         setState(() {
@@ -100,10 +99,11 @@ class _DashboardScanScreenState extends State<DashboardScanScreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         IconButton(
-                          tooltip: "Logout",
+                          tooltip: "Camera",
                           icon: Icon(Icons.camera),
                           onPressed: () {
-                            FlutterBarcodeScanner.scanBarcode('#ff6666', 'Cancel', true, ScanMode.QR)
+                            FlutterBarcodeScanner.scanBarcode(
+                                    '#ff6666', 'Cancel', true, ScanMode.QR)
                                 .then((value) {
                               qrCodeScan(
                                   context: context, qrCode1: cleanQr(value.trim()), clear: clear);
@@ -161,8 +161,7 @@ class _DashboardScanScreenState extends State<DashboardScanScreen> {
                                     //   _textNode.requestFocus();
                                     // });
                                   },
-                                  child: Lottie.asset('assets/lottie/scan-barcode.json',
-                                      width: 280, fit: BoxFit.cover),
+                                  child: Lottie.asset('assets/lottie/scan-barcode.json',width: 280, fit: BoxFit.cover),
                                 ),
                                 const Text(
                                   'Scan QR Code',
@@ -178,7 +177,7 @@ class _DashboardScanScreenState extends State<DashboardScanScreen> {
                                     fontSize: 18,
                                   ),
                                 ),
-                                SizedBox(height: 20),
+                                const SizedBox(height: 20),
                                 Container(
                                   height: 45,
                                   width: MediaQuery.of(context).size.width * 0.6,
@@ -218,7 +217,7 @@ class _DashboardScanScreenState extends State<DashboardScanScreen> {
                                               ]),
                                   ),
                                 ),
-                                SizedBox(height: 10),
+                                const SizedBox(height: 10),
                               ],
                             ),
                           ),

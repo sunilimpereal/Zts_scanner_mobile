@@ -93,16 +93,20 @@ class _PostTicketScanScreenState extends State<PostTicketScanScreen> {
                 const SizedBox(
                   height: 16,
                 ),
-                Text(widget.ticketDetail.offlineTicket.number),
+                widget.ticketDetail.offlineTicket != null
+                    ? Text(widget.ticketDetail.offlineTicket!.number)
+                    : Text(widget.ticketDetail.onlineTicket!.number),
                 const SizedBox(
                   height: 16,
                 ),
-                widget.ticketDetail.offlineTicket.fine > 0
-                    ? Text("Fine : ₹ ${widget.ticketDetail.offlineTicket.fine}",style: TextStyle(
-                      color:Colors.red,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18
-                    ),)
+                widget.ticketDetail.offlineTicket != null
+                    ? widget.ticketDetail.offlineTicket!.fine > 0
+                        ? Text(
+                            "Fine : ₹ ${widget.ticketDetail.offlineTicket!.fine}",
+                            style: TextStyle(
+                                color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18),
+                          )
+                        : Container()
                     : Container(),
                 const SizedBox(
                   height: 16,
